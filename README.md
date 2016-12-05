@@ -36,4 +36,4 @@ The generator handles exceptions and more serious failures transparently.
 
 Released under the MIT license.
 
-See also: https://github.com/justheuristic/prefetch\_generator
+See also: https://github.com/justheuristic/prefetch_generator
