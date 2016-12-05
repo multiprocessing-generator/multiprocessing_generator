@@ -6,7 +6,7 @@ using a separate process.
 
 Example:
 
-    from multiprocessing\_generator import ParallelGenerator
+    from multiprocessing_generator import ParallelGenerator
 
     def my_generator():
         while True:
