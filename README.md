@@ -21,8 +21,8 @@ Example:
             # ... download something long ...
 	    yield result
 
-    with ParallelProcessing(
-	   my_generator,
+    with ParallelGenerator(
+	   my_generator(),
 	   max_lookahead=100) as g:
         for elem in g:
             # ... do some heavy processing on that element ...
