@@ -3,7 +3,7 @@ multiprocessing\_generator
 
 [![Build
 Status](https://travis-ci.org/wetneb/multiprocessing_generator.svg?branch=master)](https://travis-ci.org/wetneb/multiprocessing\_generator)
-[![PyPI](https://img.shields.io/pypi/v/multiprocessing_generator.svg)](https://pypi.python.org/pypi/multiprocessing\_generator)
+[![PyPI](https://img.shields.io/pypi/v/multiprocessing-generator.svg)](https://pypi.python.org/pypi/multiprocessing-generator)
 
 A library to prefetch items from a Python generator in the background,
 using a separate process.
