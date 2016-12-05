@@ -1,6 +1,9 @@
 multiprocessing\_generator
 ==========================
 
+[![Build
+Status](https://travis-ci.org/wetneb/multiprocessing_generator.svg?branch=master)](https://travis-ci.org/wetneb/multiprocessing\_generator)
+
 A library to prefetch items from a Python generator in the background,
 using a separate process.
 
