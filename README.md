@@ -18,14 +18,14 @@ Example:
 
     def my_generator():
         while True:
-            # ... download something long ...
-	    yield result
+	        # ... download something long ...
+	        yield result
 
     with ParallelGenerator(
 	   my_generator(),
 	   max_lookahead=100) as g:
-        for elem in g:
-            # ... do some heavy processing on that element ...
+         for elem in g:
+              # ... do some heavy processing on that element ...
 	    
 
 Up to 100 elements ahead of what is consumed will be fetched by the generator
