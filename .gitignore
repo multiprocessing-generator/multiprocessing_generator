@@ -1,3 +1,6 @@
 # Python
 *.pyc
 .virtualenv/
+build/
+dist/
+*.egg-info/
