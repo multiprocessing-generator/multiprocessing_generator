@@ -1,7 +1,12 @@
 # -*- encoding: utf-8 -*-
 from __future__ import unicode_literals
 
-from Queue import Empty
+import sys
+if sys.version_info[0] < 3:
+    from Queue import Empty
+else:
+    from queue import Empty
+
 from multiprocessing import Process, Queue
 
 class ExceptionItem(object):
@@ -79,7 +84,7 @@ class ParallelGenerator(object):
                 """)
         try:
             item_received = False
-            while not item_received: 
+            while not item_received:
                 try:
                     item = self.queue.get(timeout=self.get_timeout)
                     item_received = True
