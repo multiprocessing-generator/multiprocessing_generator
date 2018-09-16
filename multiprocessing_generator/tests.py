@@ -10,6 +10,7 @@ import time
 import itertools
 import sys
 
+
 class ParallelGeneratorTest(unittest.TestCase):
     def test_bad_init(self):
         """
@@ -84,10 +85,10 @@ class ParallelGeneratorTest(unittest.TestCase):
         """
         If the consumer gives up, the process is killed
         """
-        process = None
+        processes = None
         with ParallelGenerator(itertools.count(), max_lookahead=10) as g:
             # dirty: we capture the inner process for later inspection
-            process = g.process
+            processes = g.processes
 
             for i in g:
                 if i >= 42:
@@ -95,5 +96,5 @@ class ParallelGeneratorTest(unittest.TestCase):
                     break
 
         time.sleep(1)
-        self.assertFalse(process.is_alive())
+        self.assertFalse(any([process.is_alive() for process in processes]))
 
