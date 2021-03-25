@@ -99,7 +99,6 @@ class ParallelGenerator(object):
             return item
 
         except Exception:
-            self.queue = None
             if self.process:
                 """
                 Why error?
@@ -113,6 +112,7 @@ class ParallelGenerator(object):
                 """
                 self.process.terminate()
             self.process = None
+            self.queue = None
             raise
 
 

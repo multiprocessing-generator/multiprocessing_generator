@@ -100,7 +100,7 @@ class ParallelGeneratorTest(unittest.TestCase):
         """
         """
         result = []
-        with ParallelGenerator(I for I in range(10)) as pg1:
+        with ParallelGenerator((I for I in range(10)), max_lookahead = 2) as pg1:
             with ParallelGenerator(I for I in pg1) as pg2:
                 for I in pg2:
                     result.append(I)
@@ -114,7 +114,7 @@ class ParallelGeneratorTest(unittest.TestCase):
         with ParallelGenerator(I for I in range(10)) as pg1:
             with ParallelGenerator(range(I) for I in pg1) as pg2:
                 for I in pg2:
-                    with ParallelGenerator(J for J in I) as pg3:
+                    with ParallelGenerator((J for J in I), max_lookahead = 2) as pg3:
                         for K in pg3:
                             result.append(K)
         pg1 = (I for I in range(10))
@@ -124,4 +124,17 @@ class ParallelGeneratorTest(unittest.TestCase):
             for K in pg3:
                 ANS.append(K)
         self.assertTrue(result == ANS)
+    def test_multiple_enter_timeout(self):
+        """
+        """
+        def waiting(X):
+            time.sleep(0.099)
+            return X
+        result = []
+        with ParallelGenerator((waiting(I) for I in range(10)), max_lookahead = 2, get_timeout = 0.1) as pg1:
+            with ParallelGenerator(I for I in pg1) as pg2:
+                for I in pg2:
+                    result.append(I)
+        
+        self.assertTrue(result == [0,1,2,3,4,5,6,7,8,9])
 
