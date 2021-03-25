@@ -16,7 +16,7 @@ class ParallelGeneratorTest(unittest.TestCase):
         The generator cannot be used without
         invoking __enter__ via a with block
         """
-        l = [1,2]
+        l = [1,2] 
         with self.assertRaises(ParallelGeneratorException):
             pl = list(ParallelGenerator(l))
 
@@ -96,4 +96,58 @@ class ParallelGeneratorTest(unittest.TestCase):
 
         time.sleep(1)
         self.assertFalse(process.is_alive())
+    def test_multiple_enter(self):
+        """
+        """
+        result = []
+        with ParallelGenerator((I for I in range(10)), max_lookahead = 2) as pg1:
+            with ParallelGenerator(I for I in pg1) as pg2:
+                for I in pg2:
+                    result.append(I)
+        
+        self.assertTrue(result == [0,1,2,3,4,5,6,7,8,9])
+    def test_multiple_enter2(self):
+        """
+        """
+        result = []
+        ANS = []
+        with ParallelGenerator(I for I in range(10)) as pg1:
+            with ParallelGenerator(range(I) for I in pg1) as pg2:
+                for I in pg2:
+                    with ParallelGenerator((J for J in I), max_lookahead = 2) as pg3:
+                        for K in pg3:
+                            result.append(K)
+        pg1 = (I for I in range(10))
+        pg2 = (range(I) for I in pg1)
+        for I in pg2:
+            pg3 = (J for J in I)
+            for K in pg3:
+                ANS.append(K)
+        self.assertTrue(result == ANS)
+    def test_multiple_enter3(self):
+        """
+        """
+        result = []
+        with ParallelGenerator((I for I in range(20)), max_lookahead = 2) as pg1:
+            with ParallelGenerator(I[1] for I in zip(range(5), pg1)) as pg2:
+                for I in pg2:
+                    result.append(I)
+            with ParallelGenerator(I[1] for I in zip(range(120), pg1)) as pg2:
+                for I in pg2:
+                    result.append(I)
+        self.assertTrue(result == list(range(20)))
+    def test_multiple_enter_timeout(self):
+        """
+        allow processing time < 0.01
+        """
+        def waiting(X):
+            time.sleep(0.089)
+            return X
+        result = []
+        with ParallelGenerator((waiting(I) for I in range(10)), max_lookahead = 2, get_timeout = 0.1) as pg1:
+            with ParallelGenerator(I for I in pg1) as pg2:
+                for I in pg2:
+                    result.append(I)
+        
+        self.assertTrue(result == [0,1,2,3,4,5,6,7,8,9])
 
