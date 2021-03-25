@@ -80,7 +80,9 @@ class ParallelGenerator(object):
         #Why error?
         #pg1 gererator make in main, but run in pg2.
         #pg1 generator's process id as p1,
-        #but pg2 (id p2) try to check p1
+        #but pg2 (id p2) wrapper try to get next from orig_gen.
+        #pg1's next will run on p1
+        #if call p1.is_alive, error : not child ... 
         #but p1 is not child of p2 
         if not self.process: return 
         if not self.process_started:
