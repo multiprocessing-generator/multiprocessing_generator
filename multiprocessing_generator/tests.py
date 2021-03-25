@@ -126,6 +126,7 @@ class ParallelGeneratorTest(unittest.TestCase):
         self.assertTrue(result == ANS)
     def test_multiple_enter_timeout(self):
         """
+        allow processing time < 0.001
         """
         def waiting(X):
             time.sleep(0.099)

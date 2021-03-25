@@ -101,14 +101,20 @@ class ParallelGenerator(object):
         except Exception:
             if self.process:
                 """
-                Why error?
-                pg1 gererator make in main, but run in pg2.
-                pg1 generator's process id as p1,
-                but pg2 (id p2) wrapper try to get next from orig_gen.
-                pg1's next will run on p1
-                if call p1.is_alive() then "error : not child ..." 
-                but p1 is not child of p2 
-                Again, p1's self.process.is_alive() is run on p2, not main
+                    Why not self.process.is_alive()?
+                reason::
+                    pg1 gererator make in main, but run in pg2.
+                    
+                    pg1 generator's process id as p1,
+                    but pg2 wrapper (id p2) try to get next from orig_gen.                    
+                    
+                    pg1's function "next" will run on p2
+                    
+                    If generator finish, then call "self.process.is_alive()" = p1.is_alive().
+                    But p1 is not child of p2 
+                    So, it must make "error : not child ..." 
+                    
+                    Again, p1's self.process.is_alive() is run on p2, not main
                 """
                 self.process.terminate()
             self.process = None
