@@ -77,6 +77,14 @@ class ParallelGenerator(object):
         return self
 
     def next(self):
+        #Why error?
+        #pg1 gererator make in main, but run in pg2.
+        #pg1 generator's process id as p1,
+        #but pg2 (id p2) wrapper try to get next from orig_gen.
+        #pg1's next will run on p1
+        #if call p1.is_alive, error : not child ... 
+        #but p1 is not child of p2 
+        #Again, p1's self.process.is_alive() is run on p2, not main
         if not self.process_started:
             raise ParallelGeneratorException(
                 """The generator has not been started.
