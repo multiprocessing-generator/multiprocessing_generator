@@ -46,7 +46,7 @@ class ParallelGenerator(object):
             try:
                 for item in orig_gen:
                     self.queue.put(item)
-                raise StopIteration()
+                self.queue.put(StopIteration)
             except Exception as e:
                 self.queue.put(ExceptionItem(e))
 
@@ -77,6 +77,7 @@ class ParallelGenerator(object):
         return self
 
     def next(self):
+        if not self.process: return 
         if not self.process_started:
             raise ParallelGeneratorException(
                 """The generator has not been started.
@@ -88,16 +89,22 @@ class ParallelGenerator(object):
                 try:
                     item = self.queue.get(timeout=self.get_timeout)
                     item_received = True
+                    if item == StopIteration:
+                        raise StopIteration
                 except Empty:
                     # check that the process is still alive
                     if not self.process.is_alive():
                         raise GeneratorDied(
                             "The generator died unexpectedly.")
-
+                    
             if type(item) == ExceptionItem:
                 raise item.exception
             return item
 
+        except StopIteration:
+            self.process = None
+            self.queue = None
+            raise StopIteration
         except Exception:
             self.queue = None
             if self.process.is_alive():

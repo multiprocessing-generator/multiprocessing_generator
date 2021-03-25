@@ -96,4 +96,24 @@ class ParallelGeneratorTest(unittest.TestCase):
 
         time.sleep(1)
         self.assertFalse(process.is_alive())
+    def test_multiple_enter(self):
+        """
+        """
+        result = []
+        with ParallelGenerator(I for I in range(10)) as pg1:
+            with ParallelGenerator(I for I in pg1) as pg2:
+                for I in pg2:
+                    result.append(I)
+        
+        self.assertTrue(result == [0,1,2,3,4,5,6,7,8,9])
+    def test_multiple_enter2(self):
+        """
+        """
+        result = []
+        with ParallelGenerator(I for I in range(10)) as pg1:
+            with ParallelGenerator(range(I) for I in pg1) as pg2:
+                for I in pg2:
+                    result.append(I)
+        
+        self.assertTrue(result == [range(0),range(1),range(2),range(3),range(4),range(5),range(6),range(7),range(8),range(9)])
 
