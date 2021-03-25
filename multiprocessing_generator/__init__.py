@@ -46,7 +46,7 @@ class ParallelGenerator(object):
             try:
                 for item in orig_gen:
                     self.queue.put(item)
-                self.queue.put(ExceptionItem(StopIteration))
+                raise StopIteration()
             except Exception as e:
                 self.queue.put(ExceptionItem(e))
 
@@ -77,14 +77,6 @@ class ParallelGenerator(object):
         return self
 
     def next(self):
-        #Why error?
-        #pg1 gererator make in main, but run in pg2.
-        #pg1 generator's process id as p1,
-        #but pg2 (id p2) wrapper try to get next from orig_gen.
-        #pg1's next will run on p1
-        #if call p1.is_alive, error : not child ... 
-        #but p1 is not child of p2 
-        if not self.process: return 
         if not self.process_started:
             raise ParallelGeneratorException(
                 """The generator has not been started.
@@ -101,20 +93,32 @@ class ParallelGenerator(object):
                     if not self.process.is_alive():
                         raise GeneratorDied(
                             "The generator died unexpectedly.")
-                    
+
             if type(item) == ExceptionItem:
                 raise item.exception
             return item
 
-        except StopIteration:
-            self.process = None
-            self.queue = None
-            raise StopIteration
         except Exception:
-            self.queue = None
-            if self.process.is_alive():
+            if self.process:
+                """
+                    Why not self.process.is_alive()?
+                reason::
+                    pg1 gererator make in main, but run in pg2.
+                    
+                    pg1 generator's process id as p1,
+                    but pg2 wrapper (id p2) try to get next from orig_gen.                    
+                    
+                    pg1's function "next" will run on p2
+                    
+                    If generator finish, then call "self.process.is_alive()" = p1.is_alive().
+                    But p1 is not child of p2 
+                    So, it must make "error : not child ..." 
+                    
+                    Again, p1's self.process.is_alive() is run on p2, not main
+                """
                 self.process.terminate()
             self.process = None
+            self.queue = None
             raise
 
 
