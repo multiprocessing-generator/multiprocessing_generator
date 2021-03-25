@@ -77,6 +77,11 @@ class ParallelGenerator(object):
         return self
 
     def next(self):
+        #Why error?
+        #pg1 gererator make in main, but run in pg2.
+        #pg1 generator's process id as p1,
+        #but pg2 (id p2) try to check p1
+        #but p1 is not child of p2 
         if not self.process: return 
         if not self.process_started:
             raise ParallelGeneratorException(
