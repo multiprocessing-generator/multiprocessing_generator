@@ -124,6 +124,18 @@ class ParallelGeneratorTest(unittest.TestCase):
             for K in pg3:
                 ANS.append(K)
         self.assertTrue(result == ANS)
+    def test_multiple_enter3(self):
+        """
+        """
+        result = []
+        with ParallelGenerator((I for I in range(20)), max_lookahead = 2) as pg1:
+            with ParallelGenerator(I[1] for I in zip(range(5), pg1)) as pg2:
+                for I in pg2:
+                    result.append(I)
+            with ParallelGenerator(I[1] for I in zip(range(120), pg1)) as pg2:
+                for I in pg2:
+                    result.append(I)
+        self.assertTrue(result == list(range(20)))
     def test_multiple_enter_timeout(self):
         """
         allow processing time < 0.01

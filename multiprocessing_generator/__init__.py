@@ -55,7 +55,7 @@ class ParallelGenerator(object):
         self.process = Process(target=wrapped)
         self.process_started = False
     def finish_if_possible(self):
-        if self.ppid == os.getpid() and self.process and self.process.is_alive():
+        if self.ppid == os.getpid() and self.process:# and self.process.is_alive():
             self.process.terminate()
             self.process = None
             self.queue = None
