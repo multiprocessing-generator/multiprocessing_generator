@@ -16,7 +16,7 @@ class ParallelGeneratorTest(unittest.TestCase):
         The generator cannot be used without
         invoking __enter__ via a with block
         """
-        l = [1,2] 
+        l = [1,2]
         with self.assertRaises(ParallelGeneratorException):
             pl = list(ParallelGenerator(l))
 
@@ -96,8 +96,10 @@ class ParallelGeneratorTest(unittest.TestCase):
 
         time.sleep(1)
         self.assertFalse(process.is_alive())
+
     def test_multiple_enter(self):
         """
+        Spawning a second parallel generator inside a first one works
         """
         result = []
         with ParallelGenerator((I for I in range(10)), max_lookahead = 2) as pg1:
@@ -106,8 +108,10 @@ class ParallelGeneratorTest(unittest.TestCase):
                     result.append(I)
         
         self.assertTrue(result == [0,1,2,3,4,5,6,7,8,9])
+
     def test_multiple_enter2(self):
         """
+        Spawning many parallel generators inside two others
         """
         result = []
         ANS = []
@@ -124,8 +128,10 @@ class ParallelGeneratorTest(unittest.TestCase):
             for K in pg3:
                 ANS.append(K)
         self.assertTrue(result == ANS)
+
     def test_multiple_enter3(self):
         """
+        Spawning nested parallel generators sequentially
         """
         result = []
         with ParallelGenerator((I for I in range(20)), max_lookahead = 2) as pg1:
@@ -136,6 +142,7 @@ class ParallelGeneratorTest(unittest.TestCase):
                 for I in pg2:
                     result.append(I)
         self.assertTrue(result == list(range(20)))
+
     def test_multiple_enter_timeout(self):
         """
         allow processing time < 0.01

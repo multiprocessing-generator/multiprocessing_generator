@@ -51,10 +51,14 @@ class ParallelGenerator(object):
                 self.queue.put(ExceptionItem(e))
 
         self.get_timeout = get_timeout
-        self.ppid = None
+        self.ppid = None # pid of the parent process
         self.process = Process(target=wrapped)
         self.process_started = False
+
     def finish_if_possible(self):
+        """
+        We can only terminate the child process from the parent process
+        """
         if self.ppid == os.getpid() and self.process:# and self.process.is_alive():
             self.process.terminate()
             self.process = None
@@ -82,8 +86,10 @@ class ParallelGenerator(object):
 
     def __iter__(self):
         return self
+
     def __del__(self):
         self.finish_if_possible()
+
     def next(self):
         if not self.process_started:
             raise ParallelGeneratorException(
